@@ -172,9 +172,6 @@ class myUnet(object):
 			img = array_to_img(img)
 			img.save("result/%d.jpg"%(i))
 
-
-
-
 if __name__ == '__main__':
 	myunet = myUnet()
 	myunet.train()

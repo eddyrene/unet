@@ -76,7 +76,7 @@ class myAugmentation(object):
 		augmentate one image
 		"""
 		datagen = self.datagen
-		i = 0
+		i = 1
 		for batch in datagen.flow(img,
                           batch_size=batch_size,
                           save_to_dir=save_to_dir,
@@ -171,7 +171,7 @@ class dataProcess(object):
 		self.npy_path = npy_path
 
 	def create_train_data(self):
-		i = 0
+		i = 1
 		print('-'*30)
 		print('Creating training images...')
 		print('-'*30)
@@ -200,7 +200,7 @@ class dataProcess(object):
 		print('Saving to .npy files done.')
 
 	def create_test_data(self):
-		i = 0
+		i = 1
 		print('-'*30)
 		print('Creating test images...')
 		print('-'*30)
@@ -250,9 +250,10 @@ if __name__ == "__main__":
 
 	aug = myAugmentation()
 	aug.Augmentation()
-	aug.splitMerge()
+	#aug.splitMerge()
 	#aug.splitTransform()
-	#mydata = dataProcess(512,512)
+	aug.splitGather()
+	#mydata = dataProcess(420,250)
 	#mydata.create_train_data()
 	#mydata.create_test_data()
 	#imgs_train,imgs_mask_train = mydata.load_train_data()
