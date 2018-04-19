@@ -2,8 +2,8 @@ from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_a
 import numpy as np 
 import os
 import glob
-#import cv2
-#from libtiff import TIFF
+import cv2
+from libtiff import TIFF
 
 class myAugmentation(object):
 	
@@ -14,7 +14,7 @@ class myAugmentation(object):
 	Finally, seperate augmentated image apart into train image and label
 	"""
 
-	def __init__(self, train_path="train", label_path="label", merge_path="merge", aug_merge_path="aug_merge", aug_train_path="aug_train", aug_label_path="aug_label", img_type="tif"):
+	def __init__(self, train_path="data/train", label_path="data/label", merge_path="data/merge", aug_merge_path="data/aug_merge", aug_train_path="data/aug_train", aug_label_path="data/aug_label", img_type="png"):
 		
 		"""
 		Using glob to get all .img_type form path
@@ -70,7 +70,7 @@ class myAugmentation(object):
 			self.doAugmentate(img, savedir, str(i))
 
 
-	def doAugmentate(self, img, save_to_dir, save_prefix, batch_size=1, save_format='tif', imgnum=30):
+	def doAugmentate(self, img, save_to_dir, save_prefix, batch_size=1, save_format='tif', imgnum=10):
 
 		"""
 		augmentate one image
@@ -131,11 +131,32 @@ class myAugmentation(object):
 			cv2.imwrite(path_train+midname+"."+self.img_type,img_train)
 			cv2.imwrite(path_label+midname+"."+self.img_type,img_label)
 
-
+	def splitGather(self):
+    		"""
+		split perspective transform images		"""
+		path_merge = self.aug_merge_path
+		path_train = "final_train" 
+		path_label = "final_label"
+		for i in range(self.slices):
+			path = path_merge + "/" + str(i)
+			train_imgs = glob.glob(path+"/*."+self.img_type)
+#			savedir = path_train + "/"
+#			if not os.path.lexists(savedir):
+#				os.mkdir(savedir)
+#			savedir = path_label + "/"
+#			if not os.path.lexists(savedir):
+#				os.mkdir(savedir)
+			for imgname in train_imgs:
+				midname = imgname[imgname.rindex("/")+1:imgname.rindex("."+self.img_type)]
+				img = cv2.imread(imgname)
+				img_train = img[:,:,2]#cv2 read image rgb->bgr
+				img_label = img[:,:,0]
+				cv2.imwrite(path_train+"/"+midname+"_train"+"."+self.img_type,img_train)
+				cv2.imwrite(path_label+"/"+midname+"_label"+"."+self.img_type,img_label)	
 
 class dataProcess(object):
 
-	def __init__(self, out_rows, out_cols, data_path = "../deform/train", label_path = "../deform/label", test_path = "../test", npy_path = "../npydata", img_type = "tif"):
+	def __init__(self, out_rows, out_cols, data_path = "final_train", label_path = "final_label", test_path = "data/test", npy_path = "data/npydata", img_type = "png"):
 
 		"""
 		
@@ -227,12 +248,12 @@ class dataProcess(object):
 
 if __name__ == "__main__":
 
-	#aug = myAugmentation()
-	#aug.Augmentation()
-	#aug.splitMerge()
+	aug = myAugmentation()
+	aug.Augmentation()
+	aug.splitMerge()
 	#aug.splitTransform()
-	mydata = dataProcess(512,512)
-	mydata.create_train_data()
-	mydata.create_test_data()
+	#mydata = dataProcess(512,512)
+	#mydata.create_train_data()
+	#mydata.create_test_data()
 	#imgs_train,imgs_mask_train = mydata.load_train_data()
 	#print imgs_train.shape,imgs_mask_train.shape
